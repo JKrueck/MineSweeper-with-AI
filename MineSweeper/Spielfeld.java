@@ -12,7 +12,7 @@ public class Spielfeld {
         this.bombs=15;
         int needsPlacement=15;
         this.dimension=dim-1;
-        this.feld= new Tile[5][5];
+        this.feld= new Tile[dim][dim];
 
         for (int i=0;i<dim;i++){
             for(int j=0;j<dim;j++){

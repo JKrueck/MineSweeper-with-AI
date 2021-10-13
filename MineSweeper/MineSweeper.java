@@ -5,10 +5,12 @@ import java.util.Scanner;
 public class MineSweeper {
     Spielfeld feld;
     int flags;
+    int dim;
 
     public MineSweeper(){
         this.flags=15;
-        this.feld=new Spielfeld(5);//FEST
+        dim=10;
+        this.feld=new Spielfeld(dim);//FEST
     }
     
     public void gameloop(){
@@ -25,11 +27,16 @@ public class MineSweeper {
             String in=input.next();
             switch(in){
                 case("Mine"):
-                    Tile aktuell=feld.getTile(coord);
-                    if(!aktuell.mineTile()){
+                    Tile aktuell1=feld.getTile(coord);
+                    if(!aktuell1.mineTile()){
                         System.out.println("GAME OVER");
                         return; 
                     }
+                    aktuell1.mineAdjacent(feld,dim);
+                    break;
+                case("Flag"):
+                    Tile aktuell2=feld.getTile(coord);
+                    aktuell2.flagTile();
                     break;
                 default:
                     throw new IllegalArgumentException("cok");
@@ -41,13 +48,15 @@ public class MineSweeper {
     }
 
     public void printGame(){
-        for(int i=0;i<5;i++){
+        for(int i=0;i<dim;i++){
             System.out.print("|");
-            for(int j=0;j<5;j++){
+            for(int j=0;j<dim;j++){
                 int[]coords={i,j};
                 Tile aktuell=feld.getTile(coords);
                 if(aktuell.mined){
                     System.out.print(aktuell.adjacent_mines);
+                }else if(aktuell.flagged){
+                    System.out.print("F");
                 }else{
                     System.out.print("X");
                 }
