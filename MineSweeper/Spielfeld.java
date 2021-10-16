@@ -27,38 +27,21 @@ public class Spielfeld {
                 }            
             }
         }
-        for (int i=0;i<dim;i++){
-            for(int j=0;j<dim;j++){
-                int[]coords={i,j};
-                checkAdjacent(coords);
-            }
-        }
+        check();
     }
     public Tile getTile(int[]coords){
         return  feld[coords[0]][coords[1]];
     }
-
-    public void checkAdjacent(int []coords){
-        if(coords[0]-1>=0 && feld[coords[0]-1][coords[1]].mine){
-            feld[coords[0]][coords[1]].adjacent_mines++;
-        }
-        if(coords[0]+1<=dimension && feld[coords[0]+1][coords[1]].mine){
-            feld[coords[0]][coords[1]].adjacent_mines++;
-        }
-        if(coords[1]-1>=0 && feld[coords[0]][coords[1]-1].mine){
-            feld[coords[0]][coords[1]].adjacent_mines++;
-        }
-        if(coords[1]+1<=dimension && feld[coords[0]][coords[1]+1].mine){
-            feld[coords[0]][coords[1]].adjacent_mines++;
-        }
-        if(coords[0]-1>=0 && coords[1]-1>=0
-            && feld[coords[0]-1][coords[1]-1].mine ){
-            feld[coords[0]][coords[1]].adjacent_mines++;
-        }
-        if(coords[0]+1<=dimension && coords[1]+1<=dimension 
-            && feld[coords[0]+1][coords[1]+1].mine){
-            feld[coords[0]][coords[1]].adjacent_mines++;
+    private void check(){
+        for (int i=0;i<=dimension;i++){
+            for(int j=0;j<=dimension;j++){
+                int[]coords={i,j};
+                Tile aktuell = getTile(coords);
+                aktuell.checkAdjacent(this,dimension,coords);
+            }
         }
     }
+
+   
     
 }
