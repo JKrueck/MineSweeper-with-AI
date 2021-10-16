@@ -18,11 +18,23 @@ public class test1 extends JFrame implements ActionListener {
     JCheckBox KI;
     JComboBox dropdown;
 
+
+    private final JFrame mainframe= new JFrame("MineSweeper");
+    private JLabel Tiles [][];
+    private JLabel FlagLabel;
+    private JLabel Gamelabel;
+
+    private final Color OUTER_BG_COLOR = new Color(250, 248, 239);
+	private final Color DEFAULT_FG_COLOR = new Color(119, 110, 101);
+	private final Color STATE_BG_COLOR = new Color(187, 173, 160);
+	private final Color EMPTY_TILE_COLOR = new Color(205, 192, 180);
+	private final Color STATE_FG_COLOR = new Color(236, 225, 209);
+
     private JPanel textpanel;
     private JPanel labelpanel;
 
     public test1(){
-
+        initialize();
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         panel = new JPanel();
         textpanel = new JPanel();
@@ -73,4 +85,31 @@ public class test1 extends JFrame implements ActionListener {
     private void changeToGame(Object dim){
         System.out.println(dim);
     }
+
+    private void initialize(){
+        JPanel MainPanel = createMainPanel();
+        mainframe.getContentPane().add(MainPanel);
+
+        JPanel HeaderPanel = createHeaderPanel();
+        mainframe.getContentPane().add(HeaderPanel,BorderLayout.NORTH);
+
+        Gamelabel = new JLabel("MineSweeper",SwingConstants.CENTER);
+        HeaderPanel.add(Gamelabel);
+    }
+
+    private JPanel createMainPanel() {
+		JPanel MainPanel = new JPanel();
+		MainPanel.setLayout(new BorderLayout(0, 0));
+		MainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+		MainPanel.setBackground(OUTER_BG_COLOR);
+		return MainPanel;
+	}
+
+    private JPanel createHeaderPanel() {
+		JPanel HeaderPanel = new JPanel();
+		HeaderPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		HeaderPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+		HeaderPanel.setBackground(OUTER_BG_COLOR);
+		return HeaderPanel;
+	}
 }
