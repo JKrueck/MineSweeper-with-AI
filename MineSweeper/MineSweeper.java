@@ -70,8 +70,8 @@ public class MineSweeper {
         }
     }
     private void checkRemainingTiles(){
-        for(int i=0;i<=dim;i++){
-            for(int j=0;j<=dim;j++){
+        for(int i=0;i<dim;i++){
+            for(int j=0;j<dim;j++){
                 int coords []= {i,j};
                 Tile aktuell = feld.getTile(coords);
                 if(aktuell.mined || aktuell.flagged){
@@ -85,8 +85,8 @@ public class MineSweeper {
     }
 
     public void checkWin(){
-        for(int i=0;i<=dim;i++){
-            for(int j=0;j<=dim;j++){
+        for(int i=0;i<dim;i++){
+            for(int j=0;j<dim;j++){
                 int coords []= {i,j};
                 Tile aktuell = feld.getTile(coords);
                 if(aktuell.flagged && !aktuell.mine){

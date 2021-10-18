@@ -5,6 +5,7 @@ import MineSweeper.MineSweeper;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Dimension;
 
 
 import java.awt.Color;
@@ -33,60 +34,54 @@ public class test1 extends JFrame implements ActionListener {
     private JPanel textpanel;
     private JPanel labelpanel;
 
-    public test1(){
-        initialize();
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        panel = new JPanel();
-        textpanel = new JPanel();
-        labelpanel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        textpanel.setLayout(new GridLayout(3,1));
-        labelpanel.setLayout(new GridLayout(2,1));
-        
+    String chosenOption;
 
-        this.setTitle("hewwo");
-        this.setSize(300,300);
+    test1 test;
 
-        
-        fertig = new JButton("Fertig");
-        label1 = new JLabel("Dimensionen:");
-        KI = new JCheckBox("KI");
-        String alter []={"5x5","10x10"};
-        dropdown = new JComboBox(alter);
-
-        fertig.addActionListener(this);
+    int W,H;
     
-        panel.add(fertig,BorderLayout.PAGE_END);
-        textpanel.add(dropdown);
-        textpanel.add(KI);
-        labelpanel.add(label1);
+    JDialog selectStuff;
 
-        panel.add(labelpanel,BorderLayout.WEST);
-        panel.add(textpanel,BorderLayout.CENTER);
-
-        this.add(panel);
-        //pack();
-
+    public test1(){
+        this.selectStuff = createSelectDialog();
+        addStuff(selectStuff);
+        initializeGameFrame();
     }
     public static void main(String[] args) {
-        test1 test = new test1();
-       //test.setVisible(true);
-        MineSweeper game=new MineSweeper();
-        game.gameloop();
+        test1 select = new test1();
+        select.setVisible(true);
+        //MineSweeper game=new MineSweeper();
+        //game.gameloop();
     }
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.fertig){
-            changeToGame(dropdown.getSelectedItem());
+            String dims = (String) dropdown.getSelectedItem();
+
+            switch(dims){
+                case("5x5"):
+                    W = 5;
+                    H = 5;
+                    break;
+                case("10x10"):
+                    W = 10;
+                    H = 10;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Arsch verfickt");
+            }
         }
+        this.selectStuff.dispose();
         
     }
+    private void initializeGameFrame(){
+        
+        selectStuff.setVisible(true);
 
-    private void changeToGame(Object dim){
-        System.out.println(dim);
-    }
 
-    private void initialize(){
+        
+        
+
         JPanel MainPanel = createMainPanel();
         mainframe.getContentPane().add(MainPanel);
 
@@ -95,6 +90,40 @@ public class test1 extends JFrame implements ActionListener {
 
         Gamelabel = new JLabel("MineSweeper",SwingConstants.CENTER);
         HeaderPanel.add(Gamelabel);
+
+
+       
+
+        JPanel BoardPanel = createBoardPanel(W,H);
+        MainPanel.add(BoardPanel, BorderLayout.CENTER);
+
+        Tiles = new JLabel[W][H];
+        for (int i=0;i<H;i++){
+            for(int j=0;j<W;j++){
+                JPanel TilePanel = createTilePanel();
+                JLabel TileLabel = new JLabel("", SwingConstants.CENTER);
+                TileLabel.addMouseListener(new MouseAdapter(){
+                    @Override
+                    public void mouseReleased(MouseEvent e){
+                        if(e.isPopupTrigger() || e.getButton()== MouseEvent.BUTTON3){
+                            TileLabel.setText("works");
+                        }
+                    }
+
+                });
+                Tiles[j][i] = TileLabel;
+                TilePanel.add(TileLabel);
+                BoardPanel.add(TilePanel);
+            }
+        }
+
+        mainframe.pack();
+
+        mainframe.setSize(new Dimension(600, 700));
+		mainframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainframe.setLocationRelativeTo(null);
+
+        mainframe.setVisible(true);
     }
 
     private JPanel createMainPanel() {
@@ -112,4 +141,53 @@ public class test1 extends JFrame implements ActionListener {
 		HeaderPanel.setBackground(OUTER_BG_COLOR);
 		return HeaderPanel;
 	}
+
+    private JPanel createBoardPanel(int W, int H) {
+		JPanel BoardPanel = new JPanel();
+		BoardPanel.setLayout(new GridLayout(H, W, 10, 10));
+		BoardPanel.setBackground(STATE_BG_COLOR);
+		BoardPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 7, 9));
+		return BoardPanel;
+	}
+
+    private JPanel createTilePanel() {
+		JPanel TilePanel = new JPanel();
+		TilePanel.setLayout(new GridLayout(1, 1, 10, 10));
+		TilePanel.setBackground(EMPTY_TILE_COLOR);
+		return TilePanel;
+	}
+
+    private JDialog createSelectDialog(){
+        JDialog select = new JDialog();
+        select.setTitle("MineSweeper");
+        select.setSize(200,300);
+        select.setModal(true);
+        return select;
+    }
+
+    private void addStuff(JDialog dialog){
+        textpanel = new JPanel();
+        labelpanel = new JPanel();
+        dialog.setLayout(new BorderLayout());
+        textpanel.setLayout(new GridLayout(3,1));
+        labelpanel.setLayout(new GridLayout(2,1));
+        
+        fertig = new JButton("Fertig");
+        label1 = new JLabel("Dimensionen:");
+        KI = new JCheckBox("KI");
+        String alter []={"5x5","10x10"};
+        dropdown = new JComboBox(alter);
+
+        fertig.addActionListener(this);
+    
+        dialog.add(fertig,BorderLayout.PAGE_END);
+        textpanel.add(dropdown);
+        textpanel.add(KI);
+        labelpanel.add(label1);
+
+        dialog.add(labelpanel,BorderLayout.WEST);
+        dialog.add(textpanel,BorderLayout.CENTER);
+    }
+
+    
 }
