@@ -19,6 +19,8 @@ public class test1 extends JFrame implements ActionListener {
     JCheckBox KI;
     JComboBox dropdown;
 
+    MineSweeper game;
+
 
     private final JFrame mainframe= new JFrame("MineSweeper");
     private JLabel Tiles [][];
@@ -42,16 +44,26 @@ public class test1 extends JFrame implements ActionListener {
     
     JDialog selectStuff;
 
+    JPopupMenu pop = new JPopupMenu();
+    JRadioButtonMenuItem radioButtonItem;
+    JRadioButtonMenuItem radioButtonItem2;
+
     public test1(){
+        this.game=new MineSweeper();
         this.selectStuff = createSelectDialog();
         addStuff(selectStuff);
+        this.radioButtonItem = new JRadioButtonMenuItem
+            ("Mine",false);
+        this.radioButtonItem2 = new JRadioButtonMenuItem
+            ("Flag",false);
+        pop.add(radioButtonItem);
+        pop.add(radioButtonItem2);
         initializeGameFrame();
+        //game.gameloop();
     }
     public static void main(String[] args) {
         test1 select = new test1();
         select.setVisible(true);
-        //MineSweeper game=new MineSweeper();
-        //game.gameloop();
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -100,13 +112,25 @@ public class test1 extends JFrame implements ActionListener {
         Tiles = new JLabel[W][H];
         for (int i=0;i<H;i++){
             for(int j=0;j<W;j++){
+                int [] coords={j,i};
                 JPanel TilePanel = createTilePanel();
                 JLabel TileLabel = new JLabel("", SwingConstants.CENTER);
                 TileLabel.addMouseListener(new MouseAdapter(){
                     @Override
                     public void mouseReleased(MouseEvent e){
                         if(e.isPopupTrigger() || e.getButton()== MouseEvent.BUTTON3){
-                            TileLabel.setText("works");
+                            pop.setLocation(TilePanel.getLocation());
+                            pop.setVisible(true);
+                            if(radioButtonItem.isSelected()){
+                                //SEND STATUS
+                                game.feld.getTile(coords).mineTile();
+                                updateGame(game);
+                                pop.setVisible(false);
+                            }
+                            if(radioButtonItem2.isSelected()){
+                                //SEND STATUS
+                                pop.setVisible(false);
+                            }
                         }
                     }
 
@@ -121,7 +145,7 @@ public class test1 extends JFrame implements ActionListener {
 
         mainframe.setSize(new Dimension(600, 700));
 		mainframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainframe.setLocationRelativeTo(null);
+		//mainframe.setLocationRelativeTo(null);
 
         mainframe.setVisible(true);
     }
@@ -187,6 +211,15 @@ public class test1 extends JFrame implements ActionListener {
 
         dialog.add(labelpanel,BorderLayout.WEST);
         dialog.add(textpanel,BorderLayout.CENTER);
+    }
+
+    public void updateGame(MineSweeper game){
+        for(int x=0;x<game.dim;x++){
+            for(int y=0;y<game.dim;y++){
+                int [] coords = {y,x};
+                Tiles[y][x].setText(Integer.toString(game.feld.getTile(coords).adjacent_mines));
+            }
+        }
     }
 
     

@@ -3,9 +3,9 @@ package MineSweeper;
 import java.util.Scanner;
 
 public class MineSweeper {
-    Spielfeld feld;
+    public Spielfeld feld;
     int flags;
-    int dim;
+    public int dim;
     int tiles_left;
 
     public MineSweeper(){
@@ -17,18 +17,10 @@ public class MineSweeper {
     
     public void gameloop(){
         int test=0;
-        printGame();
+        //printGame();
         Scanner input = new Scanner(System.in);
         while(true){
-            checkRemainingTiles();
-            System.out.println("Choose a  x-coordinate:");
-            int x=input.nextInt();
-            System.out.println("Choose a  y-coordinate:");
-            int y=input.nextInt();
-            int [] coord ={x,y};
-            System.out.println("Mine or flag?");
-            String in=input.next();
-            switch(in){
+            /*switch(in){
                 case("Mine"):
                     Tile aktuell1=feld.getTile(coord);
                     if(!aktuell1.mineTile()){
@@ -44,8 +36,8 @@ public class MineSweeper {
                     break;
                 default:
                     throw new IllegalArgumentException("cok");
-            }
-            printGame();
+            }*/
+            //printGame();
 
         }
 
