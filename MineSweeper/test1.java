@@ -1,6 +1,5 @@
+package MineSweeper;
 import javax.swing.*;
-
-import MineSweeper.MineSweeper;
 
 import java.awt.event.*;
 import java.awt.BorderLayout;
@@ -217,7 +216,13 @@ public class test1 extends JFrame implements ActionListener {
         for(int x=0;x<game.dim;x++){
             for(int y=0;y<game.dim;y++){
                 int [] coords = {y,x};
-                Tiles[y][x].setText(Integer.toString(game.feld.getTile(coords).adjacent_mines));
+                Tile aktuell = game.feld.getTile(coords);
+                if(!aktuell.mine){
+                    Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
+                }else{
+                    return;
+                }
+                
             }
         }
     }
