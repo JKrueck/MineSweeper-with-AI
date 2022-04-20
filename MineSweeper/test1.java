@@ -1,9 +1,11 @@
 package MineSweeper;
 import javax.swing.*;
+import java.util.HashMap;
 
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Dimension;
 
 
@@ -47,8 +49,10 @@ public class test1 extends JFrame implements ActionListener {
     JRadioButtonMenuItem radioButtonItem;
     JRadioButtonMenuItem radioButtonItem2;
 
+    HashMap<JPanel,int[]> TileLoc = new HashMap<JPanel,int[]>();
+
     public test1(){
-        this.game=new MineSweeper();
+        
         this.selectStuff = createSelectDialog();
         addStuff(selectStuff);
         this.radioButtonItem = new JRadioButtonMenuItem
@@ -102,41 +106,48 @@ public class test1 extends JFrame implements ActionListener {
         Gamelabel = new JLabel("MineSweeper",SwingConstants.CENTER);
         HeaderPanel.add(Gamelabel);
 
-
+        this.game=new MineSweeper(W);
        
 
         JPanel BoardPanel = createBoardPanel(W,H);
         MainPanel.add(BoardPanel, BorderLayout.CENTER);
 
         Tiles = new JLabel[W][H];
-        for (int i=0;i<H;i++){
+        for (int i=0;i<H;i++){            //create Tiles on GUI
             for(int j=0;j<W;j++){
+
                 int [] coords={j,i};
-                JPanel TilePanel = createTilePanel();
-                JLabel TileLabel = new JLabel("", SwingConstants.CENTER);
-                TileLabel.addMouseListener(new MouseAdapter(){
+                JPanel TilePanel = createTilePanel();   //create the Panel
+
+                int[] safe = new int[]{j,i};            //create an array to safe the coordinates of the Panel
+                TileLoc.put(TilePanel,safe);            // safe it in a Hashmap
+
+                JLabel TileLabel = new JLabel("["+j+","+i+"]",SwingConstants.CENTER);   //create Label for the Panel
+
+                TileLabel.addMouseListener(new MouseAdapter(){  	//create event listener
                     @Override
                     public void mouseReleased(MouseEvent e){
-                        if(e.isPopupTrigger() || e.getButton()== MouseEvent.BUTTON3){
-                            pop.setLocation(TilePanel.getLocation());
-                            pop.setVisible(true);
-                            if(radioButtonItem.isSelected()){
-                                //SEND STATUS
-                                game.feld.getTile(coords).mineTile();
-                                updateGame(game);
-                                pop.setVisible(false);
-                            }
-                            if(radioButtonItem2.isSelected()){
-                                //SEND STATUS
-                                pop.setVisible(false);
-                            }
+                        if(e.getButton()== MouseEvent.BUTTON1){
+
+                            int[] kacken =  TileLoc.get(TilePanel); // get coordinates of clicked Tile
+
+                            game.feld.getTile(kacken).mineTile();
+                            game.feld.getTile(kacken).mineAdjacent(game.feld, game.dim);
+                            updateGame(game);
+                            
+                          
+                        }else if(e.getButton()== MouseEvent.BUTTON1){
+                            //FLAG
                         }
                     }
 
                 });
-                Tiles[j][i] = TileLabel;
-                TilePanel.add(TileLabel);
-                BoardPanel.add(TilePanel);
+
+
+                Tiles[j][i] = TileLabel;        //No clue
+
+                TilePanel.add(TileLabel);       //add the Label to the Panel
+                BoardPanel.add(TilePanel);      //add the Panel to the Gameboard
             }
         }
 
@@ -217,10 +228,10 @@ public class test1 extends JFrame implements ActionListener {
             for(int y=0;y<game.dim;y++){
                 int [] coords = {y,x};
                 Tile aktuell = game.feld.getTile(coords);
-                if(!aktuell.mine){
+                if(!aktuell.mine & aktuell.mined){
                     Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
                 }else{
-                    return;
+                    //
                 }
                 
             }

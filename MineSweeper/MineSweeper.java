@@ -8,10 +8,10 @@ public class MineSweeper {
     public int dim;
     int tiles_left;
 
-    public MineSweeper(){
+    public MineSweeper(int gameDimension){
         this.flags=15;
         this.tiles_left=100;
-        dim=10;
+        this.dim=gameDimension;
         this.feld=new Spielfeld(dim);//FEST
     }
     
