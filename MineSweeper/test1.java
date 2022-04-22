@@ -11,6 +11,11 @@ import java.awt.Dimension;
 
 import java.awt.Color;
 public class test1 extends JFrame implements ActionListener {
+
+    JPanel MainPanel;
+    JPanel HeaderPanel;
+
+
     JButton fertig;
     JTextField text1;
     JTextField text2;
@@ -32,6 +37,7 @@ public class test1 extends JFrame implements ActionListener {
 	private final Color DEFAULT_FG_COLOR = new Color(119, 110, 101);
 	private final Color STATE_BG_COLOR = new Color(187, 173, 160);
 	private final Color EMPTY_TILE_COLOR = new Color(205, 192, 180);
+    private final Color MINED_TILE_COLOR = new Color(205, 180, 193);
 	private final Color STATE_FG_COLOR = new Color(236, 225, 209);
 
     private JPanel textpanel;
@@ -53,23 +59,23 @@ public class test1 extends JFrame implements ActionListener {
 
     public test1(){
         
-        this.selectStuff = createSelectDialog();
-        addStuff(selectStuff);
-        this.radioButtonItem = new JRadioButtonMenuItem
+        this.selectStuff = createSelectDialog(); // create the game option dialog
+        addStuff(selectStuff);                   // add everything to the dialog
+        this.radioButtonItem = new JRadioButtonMenuItem //not used yet
             ("Mine",false);
-        this.radioButtonItem2 = new JRadioButtonMenuItem
+        this.radioButtonItem2 = new JRadioButtonMenuItem//not used yet
             ("Flag",false);
-        pop.add(radioButtonItem);
-        pop.add(radioButtonItem2);
-        initializeGameFrame();
+        pop.add(radioButtonItem); //add "mine" button to a popup menu
+        pop.add(radioButtonItem2);//add "flag" button to popup menu
+        initializeGameFrame();  //initialize the Main JFrame
         //game.gameloop();
     }
     public static void main(String[] args) {
-        test1 select = new test1();
-        select.setVisible(true);
+        test1 select = new test1(); //create new test1 class instance
+        select.setVisible(true);    // make it visible
     }
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {    //action listener for settings menu
         if(e.getSource() == this.fertig){
             String dims = (String) dropdown.getSelectedItem();
 
@@ -97,10 +103,10 @@ public class test1 extends JFrame implements ActionListener {
         
         
 
-        JPanel MainPanel = createMainPanel();
+        this.MainPanel = createMainPanel();
         mainframe.getContentPane().add(MainPanel);
 
-        JPanel HeaderPanel = createHeaderPanel();
+        this.HeaderPanel = createHeaderPanel();
         mainframe.getContentPane().add(HeaderPanel,BorderLayout.NORTH);
 
         Gamelabel = new JLabel("MineSweeper",SwingConstants.CENTER);
@@ -122,7 +128,7 @@ public class test1 extends JFrame implements ActionListener {
                 int[] safe = new int[]{j,i};            //create an array to safe the coordinates of the Panel
                 TileLoc.put(TilePanel,safe);            // safe it in a Hashmap
 
-                JLabel TileLabel = new JLabel("["+j+","+i+"]",SwingConstants.CENTER);   //create Label for the Panel
+                JLabel TileLabel = new JLabel(" ",SwingConstants.CENTER);   //create Label for the Panel
 
                 TileLabel.addMouseListener(new MouseAdapter(){  	//create event listener
                     @Override
@@ -131,12 +137,16 @@ public class test1 extends JFrame implements ActionListener {
 
                             int[] kacken =  TileLoc.get(TilePanel); // get coordinates of clicked Tile
 
-                            game.feld.getTile(kacken).mineTile();
-                            game.feld.getTile(kacken).mineAdjacent(game.feld, game.dim);
+                            if(game.feld.getTile(kacken).mineTile()){
+                                game.feld.getTile(kacken).mineAdjacent(game.feld, game.dim);
+                            }else{
+                                endGame(kacken,TilePanel);
+                            }
+                            
                             updateGame(game);
                             
                           
-                        }else if(e.getButton()== MouseEvent.BUTTON1){
+                        }else if(e.getButton()== MouseEvent.BUTTON2){
                             //FLAG
                         }
                     }
@@ -159,6 +169,35 @@ public class test1 extends JFrame implements ActionListener {
 
         mainframe.setVisible(true);
     }
+
+
+    public void updateGame(MineSweeper game){
+        for(int x=0;x<game.dim;x++){
+            for(int y=0;y<game.dim;y++){
+                int [] coords = {y,x};
+                Tile aktuell = game.feld.getTile(coords);
+                if(!aktuell.mine & aktuell.mined){
+                    Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
+                    Tiles[y][x].getParent().setBackground(MINED_TILE_COLOR);
+                   //Tiles[y][x].revalidate();
+                }else{
+                    //
+                }
+                
+            }
+        }
+    }
+
+    private void endGame(int[] Bomb, JPanel back){
+        Tiles[Bomb[0]][Bomb[1]].getParent().setBackground(Color.red);
+        back.getParent().setBackground(Color.orange);
+        this.Gamelabel.setText("GAME OVER");
+        this.HeaderPanel.revalidate();
+    }
+
+
+
+
 
     private JPanel createMainPanel() {
 		JPanel MainPanel = new JPanel();
@@ -221,21 +260,6 @@ public class test1 extends JFrame implements ActionListener {
 
         dialog.add(labelpanel,BorderLayout.WEST);
         dialog.add(textpanel,BorderLayout.CENTER);
-    }
-
-    public void updateGame(MineSweeper game){
-        for(int x=0;x<game.dim;x++){
-            for(int y=0;y<game.dim;y++){
-                int [] coords = {y,x};
-                Tile aktuell = game.feld.getTile(coords);
-                if(!aktuell.mine & aktuell.mined){
-                    Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
-                }else{
-                    //
-                }
-                
-            }
-        }
     }
 
     
