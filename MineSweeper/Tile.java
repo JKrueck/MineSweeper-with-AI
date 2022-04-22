@@ -25,7 +25,6 @@ public class Tile {
 
     public boolean mineTile(){
         if(mine){
-            //SEND GAME OVER
             return false;
         }else{
             this.mined=true;
@@ -119,7 +118,7 @@ public class Tile {
             }
             coords[0]++;
         }
-        if(coords[0]+1<=dimension){
+        if(coords[0]+1<dimension){
             coords[0]++;
             Tile aktuell=feld.getTile(coords);
             if(aktuell.adjacent_mines==0 && !aktuell.mined){
@@ -157,7 +156,7 @@ public class Tile {
             coords[0]++;
             coords[1]++;
         }
-        if(coords[0]+1<=dimension && coords[1]+1<=dimension){
+        if(coords[0]+1<dimension && coords[1]+1<dimension){
             coords[0]++;
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
@@ -168,7 +167,7 @@ public class Tile {
             coords[0]--;
             coords[1]--;
         }
-        if(coords[0]-1>=0 && coords[1]+1<=dimension){
+        if(coords[0]-1>=0 && coords[1]+1<dimension){
             coords[0]--;
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
@@ -179,7 +178,7 @@ public class Tile {
             coords[0]++;
             coords[1]--;
         }
-        if(coords[0]+1<=dimension && coords[1]-1>=0){
+        if(coords[0]+1<dimension && coords[1]-1>=0){
             coords[0]++;
             coords[1]--;
             Tile aktuell=feld.getTile(coords);
@@ -203,7 +202,7 @@ public class Tile {
             }
             coords[0]++;
         }
-        if(coords[0]+1<=dimension){
+        if(coords[0]+1<dimension){
             coords[0]++;
             Tile aktuell=feld.getTile(coords);
             if(!aktuell.mine && !aktuell.mined){
@@ -219,7 +218,7 @@ public class Tile {
             }
             coords[1]++;
         }
-        if(coords[1]+1<=dimension){
+        if(coords[1]+1<dimension){
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
             if(!aktuell.mine && !aktuell.mined){
@@ -237,7 +236,7 @@ public class Tile {
             coords[0]++;
             coords[1]++;
         }
-        if(coords[0]+1<=dimension && coords[1]+1<=dimension){
+        if(coords[0]+1<dimension && coords[1]+1<dimension){
             coords[0]++;
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
@@ -247,7 +246,7 @@ public class Tile {
             coords[0]--;
             coords[1]--;
         }
-        if(coords[0]-1>=0 && coords[1]+1<=dimension){
+        if(coords[0]-1>=0 && coords[1]+1<dimension){
             coords[0]--;
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
@@ -257,7 +256,7 @@ public class Tile {
             coords[0]++;
             coords[1]--;
         }
-        if(coords[0]+1<=dimension && coords[1]-1>=0){
+        if(coords[0]+1<dimension && coords[1]-1>=0){
             coords[0]++;
             coords[1]--;
             Tile aktuell=feld.getTile(coords);

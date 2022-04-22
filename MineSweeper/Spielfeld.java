@@ -1,5 +1,6 @@
 package MineSweeper;
 
+import MineSweeper.Tile;
 import java.util.Random;
 
 public class Spielfeld {
