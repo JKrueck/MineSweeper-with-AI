@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.Dimension;
 
 
@@ -24,14 +23,13 @@ public class test1 extends JFrame implements ActionListener {
     JLabel label1;
     JLabel label2;
     JCheckBox KI;
-    JComboBox dropdown;
+    JComboBox<String> dropdown;
 
     MineSweeper game;
 
 
     private final JFrame mainframe= new JFrame("MineSweeper");
     private JLabel Tiles [][];
-    private JLabel FlagLabel;
     private JLabel Gamelabel;
 
     private final Color OUTER_BG_COLOR = new Color(250, 248, 239);
@@ -267,7 +265,7 @@ public class test1 extends JFrame implements ActionListener {
         label1 = new JLabel("Dimensionen:");
         KI = new JCheckBox("KI");
         String alter []={"5x5","10x10"};
-        dropdown = new JComboBox(alter);
+        dropdown = new JComboBox<String>(alter);
 
         fertig.addActionListener(this);
     

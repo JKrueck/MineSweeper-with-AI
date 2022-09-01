@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import Minesweeper.Tile;
+//import Minesweeper.Tile;
 
 public class Spielfeld {
     Tile [][] feld;
