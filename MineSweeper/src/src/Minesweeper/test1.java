@@ -1,5 +1,6 @@
-package MineSweeper;
+package Minesweeper;
 import javax.swing.*;
+
 import java.util.HashMap;
 
 import java.awt.event.*;
@@ -34,11 +35,11 @@ public class test1 extends JFrame implements ActionListener {
     private JLabel Gamelabel;
 
     private final Color OUTER_BG_COLOR = new Color(250, 248, 239);
-	private final Color DEFAULT_FG_COLOR = new Color(119, 110, 101);
+	//private final Color DEFAULT_FG_COLOR = new Color(119, 110, 101);
 	private final Color STATE_BG_COLOR = new Color(187, 173, 160);
 	private final Color EMPTY_TILE_COLOR = new Color(205, 192, 180);
     private final Color MINED_TILE_COLOR = new Color(205, 180, 193);
-	private final Color STATE_FG_COLOR = new Color(236, 225, 209);
+	//private final Color STATE_FG_COLOR = new Color(236, 225, 209);
 
     private JPanel textpanel;
     private JPanel labelpanel;
@@ -97,12 +98,10 @@ public class test1 extends JFrame implements ActionListener {
     }
     private void initializeGameFrame(){
         
+        //open option dialog
         selectStuff.setVisible(true);
 
-
-        
-        
-
+        //open game window
         this.MainPanel = createMainPanel();
         mainframe.getContentPane().add(MainPanel);
 
@@ -122,11 +121,10 @@ public class test1 extends JFrame implements ActionListener {
         for (int i=0;i<H;i++){            //create Tiles on GUI
             for(int j=0;j<W;j++){
 
-                int [] coords={j,i};
                 JPanel TilePanel = createTilePanel();   //create the Panel
 
-                int[] safe = new int[]{j,i};            //create an array to safe the coordinates of the Panel
-                TileLoc.put(TilePanel,safe);            // safe it in a Hashmap
+                int[] save = new int[]{j,i};            //create an array to safe the coordinates of the Panel
+                TileLoc.put(TilePanel,save);            // safe it in a Hashmap
 
                 JLabel TileLabel = new JLabel(" ",SwingConstants.CENTER);   //create Label for the Panel
 
@@ -135,19 +133,30 @@ public class test1 extends JFrame implements ActionListener {
                     public void mouseReleased(MouseEvent e){
                         if(e.getButton()== MouseEvent.BUTTON1){
 
-                            int[] kacken =  TileLoc.get(TilePanel); // get coordinates of clicked Tile
+                            int[] chosen =  TileLoc.get(TilePanel); // get coordinates of clicked Tile
 
-                            if(game.feld.getTile(kacken).mineTile()){
-                                game.feld.getTile(kacken).mineAdjacent(game.feld, game.dim);
+                            if(game.feld.getTile(chosen).mineTile()){
+                                if(game.feld.getTile(chosen).adjacent_mines==0){
+                                    game.feld.getTile(chosen).mineAdjacent(game.feld, game.dim);
+                                }else{
+                                    game.feld.getTile(chosen).mineTile();
+                                }
                             }else{
-                                endGame(kacken,TilePanel);
+                                endGame(chosen,TilePanel);
                             }
                             
                             updateGame(game);
                             
                           
-                        }else if(e.getButton()== MouseEvent.BUTTON2){
+                        }else if(e.getButton()== MouseEvent.BUTTON3){
                             //FLAG
+                            int[] chosen =  TileLoc.get(TilePanel);
+                            Tiles[chosen[0]][chosen[1]].getParent().setBackground(Color.green);
+                            game.feld.getTile(chosen).flagTile();
+                        }
+
+                        if(game.checkWin()){
+                            winGame(TilePanel);
                         }
                     }
 
@@ -177,9 +186,12 @@ public class test1 extends JFrame implements ActionListener {
                 int [] coords = {y,x};
                 Tile aktuell = game.feld.getTile(coords);
                 if(!aktuell.mine & aktuell.mined){
-                    Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
-                    Tiles[y][x].getParent().setBackground(MINED_TILE_COLOR);
-                   //Tiles[y][x].revalidate();
+                    if(aktuell.adjacent_mines==0){
+                        Tiles[y][x].getParent().setBackground(MINED_TILE_COLOR);
+                    }else{
+                        Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
+                        Tiles[y][x].getParent().setBackground(MINED_TILE_COLOR);
+                    }
                 }else{
                     //
                 }
@@ -192,6 +204,12 @@ public class test1 extends JFrame implements ActionListener {
         Tiles[Bomb[0]][Bomb[1]].getParent().setBackground(Color.red);
         back.getParent().setBackground(Color.orange);
         this.Gamelabel.setText("GAME OVER");
+        this.HeaderPanel.revalidate();
+    }
+
+    private void winGame(JPanel back){
+        back.getParent().setBackground(Color.green);
+        this.Gamelabel.setText("YOU WON");
         this.HeaderPanel.revalidate();
     }
 

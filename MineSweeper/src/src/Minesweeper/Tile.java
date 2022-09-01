@@ -1,11 +1,18 @@
-package MineSweeper;
+package Minesweeper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tile {
+    //true if the tile is a mine
     boolean mine;
+    //true if the tile has been flagged
     boolean flagged;
+    //true if the tile has been mined
     boolean mined;
     public int [] coordinates;
     public int adjacent_mines;
+    private List <Tile> adjacentTiles = new ArrayList<Tile>();
 
     public Tile(boolean isMine,int[] coords){
         this.mine=isMine;
@@ -36,6 +43,8 @@ public class Tile {
         if(coords[0]-1>=0){
             coords[0]--;
             Tile aktuell=feld.getTile(coords);
+            //Add the adjacent tile to a list so we need this hack only once
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -44,6 +53,7 @@ public class Tile {
         if(coords[0]+1<=dimension){
             coords[0]++;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -52,6 +62,7 @@ public class Tile {
         if(coords[1]-1>=0){
             coords[1]--;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -60,6 +71,7 @@ public class Tile {
         if(coords[1]+1<=dimension){
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -69,6 +81,7 @@ public class Tile {
             coords[0]--;
             coords[1]--;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -79,6 +92,7 @@ public class Tile {
             coords[0]++;
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -89,6 +103,7 @@ public class Tile {
             coords[0]--;
             coords[1]++;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -99,6 +114,7 @@ public class Tile {
             coords[0]++;
             coords[1]--;
             Tile aktuell=feld.getTile(coords);
+            this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
                 this.adjacent_mines++;
             }
@@ -109,7 +125,24 @@ public class Tile {
 
     public void mineAdjacent(Spielfeld feld,int dimension){
         int [] coords = this.coordinates;
-        if(coords[0]-1>=0){
+        int test = this.adjacentTiles.size();
+
+        if(this.adjacentTiles.size()==0){
+            throw new IllegalArgumentException("no adjacent blocks");
+        }else{
+            for(int i=0;i<this.adjacentTiles.size();i++){
+                Tile check = adjacentTiles.get(i);
+                if(check.adjacent_mines==0 && !check.mined && !check.mine){
+                    check.mined=true;
+                    check.mineAdjacent(feld, dimension);
+                }else if(!check.mined && !check.mine){
+                    check.mined=true;
+                }
+            }
+        }
+
+
+        /*if(coords[0]-1>=0){
             coords[0]--;
             Tile aktuell=feld.getTile(coords);
             if(aktuell.adjacent_mines==0 && !aktuell.mined){
@@ -189,7 +222,7 @@ public class Tile {
             coords[0]--;
             coords[1]++;
         }
-        mineAdjacent2(feld,dimension);
+        mineAdjacent2(feld,dimension);*/
     }
 
     public void mineAdjacent2(Spielfeld feld,int dimension){
