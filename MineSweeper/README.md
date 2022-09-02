@@ -9,3 +9,6 @@
 
 ## Minesweeper
  This is a simple Minesweeper clone with a GUI and an AI based on DPLL + clause learning
+- restrict number of flags
+- revert flag placement
+- restart button
