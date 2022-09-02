@@ -3,7 +3,7 @@
 - [x] revert flag placement *done*
 - [x] restart button
 - [] dynamic bomb number
-- [x non square game fields (optional)
+- [] non square game fields (optional)
 - [] translate all variables to english
 
 
