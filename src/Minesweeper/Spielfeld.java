@@ -14,7 +14,7 @@ public class Spielfeld {
 
     public Spielfeld(int dim, int boom){
         this.bombAmount = boom;
-        Random rand=new Random();
+        Random rand=new Random(1337);
         int needsPlacement = boom;
         this.dimension=dim-1;
         this.feld= new Tile[dim][dim];
@@ -39,6 +39,19 @@ public class Spielfeld {
     }
     public Tile getTile(int[]coords){
         return  feld[coords[0]][coords[1]];
+    }
+
+    public ArrayList<Tile> getMined(){
+        ArrayList<Tile> result = new ArrayList<>();
+        for (int i=0;i<this.dimension+1;i++){
+            for(int j=0;j<this.dimension+1;j++){
+                int[]coords={i,j};
+                if(getTile(coords).mined){
+                    result.add(getTile(coords));
+                }         
+            }
+        }
+        return result;
     }
 
     public List<Tile> getBombs(){

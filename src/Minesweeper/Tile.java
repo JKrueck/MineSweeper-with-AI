@@ -12,7 +12,8 @@ public class Tile {
     boolean mined;
     public int [] coordinates;
     public int adjacent_mines;
-    private List <Tile> adjacentTiles = new ArrayList<Tile>();
+    private ArrayList <Tile> adjacentTiles = new ArrayList<Tile>();
+    private Clause possible;
 
     public Tile(boolean isMine,int[] coords){
         this.mine=isMine;
@@ -20,6 +21,10 @@ public class Tile {
         this.flagged=false;
         this.adjacent_mines=0;
         this.mined=false;
+    }
+
+    public Clause getClause(){
+        return this.possible;
     }
 
     public boolean flagTile(){
@@ -46,12 +51,14 @@ public class Tile {
     }
 
     public void checkAdjacent(Spielfeld feld,int dimension,int []coords){
+        ArrayList<Tile> save = new ArrayList<>();
         if(coords[0]-1>=0){
             coords[0]--;
             Tile aktuell=feld.getTile(coords);
             //Add the adjacent tile to a list so we need this hack only once
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[0]++;
@@ -61,6 +68,7 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[0]--;
@@ -70,6 +78,7 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[1]++;
@@ -79,6 +88,7 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[1]--;
@@ -89,6 +99,7 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[0]++;
@@ -100,6 +111,7 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[0]--;
@@ -111,6 +123,7 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[0]++;
@@ -122,11 +135,14 @@ public class Tile {
             Tile aktuell=feld.getTile(coords);
             this.adjacentTiles.add(aktuell);
             if(aktuell.mine){
+                save.add(aktuell);
                 this.adjacent_mines++;
             }
             coords[0]--;
             coords[1]++;
         }
+
+        this.possible = new Clause(adjacentTiles,adjacent_mines);
     }
 
     public void mineAdjacent(Spielfeld feld,int dimension){

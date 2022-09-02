@@ -10,7 +10,7 @@ import java.awt.Dimension;
 
 
 import java.awt.Color;
-public class test1 extends JFrame implements ActionListener {
+public class GUI extends JFrame implements ActionListener {
 
     JPanel MainPanel;
     JPanel HeaderPanel;
@@ -31,7 +31,8 @@ public class test1 extends JFrame implements ActionListener {
 
     MineSweeper game;
 
-    private boolean end;
+    boolean end;
+    
 
 
     private final JFrame mainframe= new JFrame("MineSweeper");
@@ -50,7 +51,7 @@ public class test1 extends JFrame implements ActionListener {
 
     String chosenOption;
 
-    test1 test;
+    GUI test;
 
     int W,H,bombs;
     
@@ -61,8 +62,11 @@ public class test1 extends JFrame implements ActionListener {
     JRadioButtonMenuItem radioButtonItem2;
 
     HashMap<JPanel,int[]> TileLoc = new HashMap<JPanel,int[]>();
+    HashMap<int[],JPanel> TileLocInv = new HashMap<>();
 
-    public test1(){
+    private static boolean ai;
+
+    public GUI(){
         
         this.selectStuff = createSelectDialog(); // create the game option dialog
         addStuff(selectStuff);                   // add everything to the dialog
@@ -76,7 +80,7 @@ public class test1 extends JFrame implements ActionListener {
         //game.gameloop();
     }
     public static void main(String[] args) {
-        test1 select = new test1(); //create new test1 class instance
+        GUI select = new GUI(); //create new test1 class instance
         select.setVisible(true);    // make it visible
     }
     @Override
@@ -145,13 +149,14 @@ public class test1 extends JFrame implements ActionListener {
 
                 int[] save = new int[]{j,i};            //create an array to safe the coordinates of the Panel
                 TileLoc.put(TilePanel,save);            // safe it in a Hashmap
+                TileLocInv.put(save, TilePanel);        //save the inverse for the AI
 
                 JLabel TileLabel = new JLabel(" ",SwingConstants.CENTER);   //create Label for the Panel
 
                 TileLabel.addMouseListener(new MouseAdapter(){  	//create event listener
                     @Override
                     public void mouseReleased(MouseEvent e){
-                        if(!end){ 
+                        if(!end && !ai){ 
                             if(e.getButton()== MouseEvent.BUTTON1){
 
                             int[] chosen =  TileLoc.get(TilePanel); // get coordinates of clicked Tile
@@ -207,6 +212,10 @@ public class test1 extends JFrame implements ActionListener {
 		//mainframe.setLocationRelativeTo(null);
 
         mainframe.setVisible(true);
+
+        if(ai){
+            AI auto = new AI(this, game);
+        }
     }
 
 
@@ -228,7 +237,7 @@ public class test1 extends JFrame implements ActionListener {
         }
     }
 
-    private void endGame(int[] Bomb, JPanel back){
+    public void endGame(int[] Bomb, JPanel back){
         end = true;
         Tiles[Bomb[0]][Bomb[1]].getParent().setBackground(Color.red);
         back.getParent().setBackground(Color.orange);
@@ -236,7 +245,7 @@ public class test1 extends JFrame implements ActionListener {
         this.HeaderPanel.revalidate();
     }
 
-    private void winGame(JPanel back){
+    public void winGame(JPanel back){
         end = true;
         back.getParent().setBackground(Color.green);
         this.Gamelabel.setText("YOU WON");
@@ -310,6 +319,15 @@ public class test1 extends JFrame implements ActionListener {
         KI = new JCheckBox("KI");
         String alter []={"5x5","10x10"};
         dropdown = new JComboBox<String>(alter);
+
+
+        KI.addItemListener(new ItemListener() {    
+            public void itemStateChanged(ItemEvent e) {                 
+               if(e.getStateChange()==1){
+                ai = true;
+               }   
+            }    
+         });    
 
         fertig.addActionListener(this);
     

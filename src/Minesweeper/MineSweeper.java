@@ -1,5 +1,6 @@
 package Minesweeper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MineSweeper {
@@ -71,5 +72,16 @@ public class MineSweeper {
             }
         }
         return false; 
+    }
+
+    public ArrayList<Clause> getClauses(){
+        ArrayList<Clause> result = new ArrayList<>();
+        for(int y=0;y<dim;y++){
+            for(int x=0;x<dim;x++){
+                int[] coords = {x,y};
+                result.add(this.feld.getTile(coords).getClause());
+            }
+        }
+        return result;
     }
 }
