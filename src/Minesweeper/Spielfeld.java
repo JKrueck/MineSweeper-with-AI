@@ -10,10 +10,12 @@ public class Spielfeld {
     Tile [][] feld;
     int dimension;
     private List<Tile> bombs = new ArrayList<Tile>();
+    private int bombAmount;
 
-    public Spielfeld(int dim){
+    public Spielfeld(int dim, int boom){
+        this.bombAmount = boom;
         Random rand=new Random();
-        int needsPlacement=15;
+        int needsPlacement = boom;
         this.dimension=dim-1;
         this.feld= new Tile[dim][dim];
 

@@ -5,14 +5,16 @@ import java.util.List;
 public class MineSweeper {
     public Spielfeld feld;
     int flags;
+    int bombs;
     public int dim;
     int tiles_left;
 
-    public MineSweeper(int gameDimension){
-        this.flags=15;
+    public MineSweeper(int gameDimension, int boom){
+        this.bombs = boom;
+        this.flags = this.bombs;
         this.tiles_left=gameDimension*gameDimension;
         this.dim=gameDimension;
-        this.feld=new Spielfeld(dim);
+        this.feld=new Spielfeld(dim, bombs);
     }
     
     

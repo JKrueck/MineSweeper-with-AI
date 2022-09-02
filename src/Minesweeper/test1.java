@@ -52,7 +52,7 @@ public class test1 extends JFrame implements ActionListener {
 
     test1 test;
 
-    int W,H;
+    int W,H,bombs;
     
     JDialog selectStuff;
 
@@ -88,10 +88,12 @@ public class test1 extends JFrame implements ActionListener {
                 case("5x5"):
                     W = 5;
                     H = 5;
+                    bombs = 4;
                     break;
                 case("10x10"):
                     W = 10;
                     H = 10;
+                    bombs = 15;
                     break;
                 default:
                     throw new IllegalArgumentException("Arsch verfickt");
@@ -101,13 +103,12 @@ public class test1 extends JFrame implements ActionListener {
             this.game = newGame();
             for(int x=0;x<game.dim;x++){
                 for(int y=0;y<game.dim;y++){
-                    int [] coords = {y,x};
                     Tiles[y][x].getParent().setBackground(EMPTY_TILE_COLOR);
                     Tiles[y][x].setText("");
                 }
             }
             BoardPanel.setBackground(STATE_BG_COLOR);
-            flags.setText("15");
+            flags.setText(String.valueOf(this.bombs));
             this.end = false;
             this.Gamelabel.setText("Minesweeper");
 
@@ -265,7 +266,7 @@ public class test1 extends JFrame implements ActionListener {
         //restart.setSize(new Dimension(50,1));
 
         Gamelabel = new JLabel("MineSweeper");
-        flags = new JLabel("15");
+        flags = new JLabel(String.valueOf(this.bombs));
         flags.setForeground(Color.RED);
        
         HeaderPanel.add(Gamelabel,SwingConstants.CENTER);
@@ -322,7 +323,7 @@ public class test1 extends JFrame implements ActionListener {
     }
 
     public MineSweeper newGame(){
-        return new MineSweeper(this.W);
+        return new MineSweeper(this.W,this.bombs);
     }
 
     
