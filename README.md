@@ -2,9 +2,9 @@
 - [x] restrict number of flags 
 - [x] revert flag placement *done*
 - [x] restart button
-- [] dynamic bomb number
-- [] non square game fields (optional)
-- [] translate all variables to english
+- [ ] dynamic bomb number
+- [ ] non square game fields (optional)
+- [ ] translate all variables to english
 
 
 ## Minesweeper
