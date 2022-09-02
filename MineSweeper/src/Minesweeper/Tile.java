@@ -30,6 +30,12 @@ public class Tile {
         return false;
     }
 
+    public void unFlagTile(){
+        if(!mined){
+            this.flagged=false;
+        }
+    }
+
     public boolean mineTile(){
         if(mine){
             return false;

@@ -14,18 +14,24 @@ public class test1 extends JFrame implements ActionListener {
 
     JPanel MainPanel;
     JPanel HeaderPanel;
+    JPanel BoardPanel;
 
 
     JButton fertig;
+    JButton restart;
     JTextField text1;
     JTextField text2;
     JPanel panel;
     JLabel label1;
     JLabel label2;
+    JLabel flags;
+    JLabel gameName;
     JCheckBox KI;
     JComboBox<String> dropdown;
 
     MineSweeper game;
+
+    private boolean end;
 
 
     private final JFrame mainframe= new JFrame("MineSweeper");
@@ -90,8 +96,23 @@ public class test1 extends JFrame implements ActionListener {
                 default:
                     throw new IllegalArgumentException("Arsch verfickt");
             }
+            this.selectStuff.dispose();
+        }else if(e.getSource() == this.restart){
+            this.game = newGame();
+            for(int x=0;x<game.dim;x++){
+                for(int y=0;y<game.dim;y++){
+                    int [] coords = {y,x};
+                    Tiles[y][x].getParent().setBackground(EMPTY_TILE_COLOR);
+                    Tiles[y][x].setText("");
+                }
+            }
+            BoardPanel.setBackground(STATE_BG_COLOR);
+            flags.setText("15");
+            this.end = false;
+            this.Gamelabel.setText("Minesweeper");
+
         }
-        this.selectStuff.dispose();
+        
         
     }
     private void initializeGameFrame(){
@@ -106,13 +127,13 @@ public class test1 extends JFrame implements ActionListener {
         this.HeaderPanel = createHeaderPanel();
         mainframe.getContentPane().add(HeaderPanel,BorderLayout.NORTH);
 
-        Gamelabel = new JLabel("MineSweeper",SwingConstants.CENTER);
-        HeaderPanel.add(Gamelabel);
+        
 
-        this.game=new MineSweeper(W);
+        this.game=newGame();
+        this.end = false;
        
 
-        JPanel BoardPanel = createBoardPanel(W,H);
+        this.BoardPanel = createBoardPanel(W,H);
         MainPanel.add(BoardPanel, BorderLayout.CENTER);
 
         Tiles = new JLabel[W][H];
@@ -129,7 +150,8 @@ public class test1 extends JFrame implements ActionListener {
                 TileLabel.addMouseListener(new MouseAdapter(){  	//create event listener
                     @Override
                     public void mouseReleased(MouseEvent e){
-                        if(e.getButton()== MouseEvent.BUTTON1){
+                        if(!end){ 
+                            if(e.getButton()== MouseEvent.BUTTON1){
 
                             int[] chosen =  TileLoc.get(TilePanel); // get coordinates of clicked Tile
 
@@ -142,19 +164,28 @@ public class test1 extends JFrame implements ActionListener {
                             }else{
                                 endGame(chosen,TilePanel);
                             }
-                            
+                                
                             updateGame(game);
+                                
                             
-                          
-                        }else if(e.getButton()== MouseEvent.BUTTON3){
-                            //FLAG
-                            int[] chosen =  TileLoc.get(TilePanel);
-                            Tiles[chosen[0]][chosen[1]].getParent().setBackground(Color.green);
-                            game.feld.getTile(chosen).flagTile();
-                        }
+                            }else if(e.getButton()== MouseEvent.BUTTON3){
+                                int[] chosen =  TileLoc.get(TilePanel);
+                                if(game.feld.getTile(chosen).flagged){
+                                    Tiles[chosen[0]][chosen[1]].getParent().setBackground(EMPTY_TILE_COLOR);
+                                    game.feld.getTile(chosen).unFlagTile();
+                                    game.flags++;
+                                    flags.setText(String.valueOf(game.flags));
+                                }else if(game.flags!=0){
+                                    Tiles[chosen[0]][chosen[1]].getParent().setBackground(Color.green);
+                                    game.feld.getTile(chosen).flagTile();
+                                    game.flags--;
+                                    flags.setText(String.valueOf(game.flags));
+                                }
+                            }
 
-                        if(game.checkWin()){
-                            winGame(TilePanel);
+                            if(game.checkWin()){
+                                winGame(TilePanel);
+                            }
                         }
                     }
 
@@ -190,8 +221,6 @@ public class test1 extends JFrame implements ActionListener {
                         Tiles[y][x].setText(Integer.toString(aktuell.adjacent_mines));
                         Tiles[y][x].getParent().setBackground(MINED_TILE_COLOR);
                     }
-                }else{
-                    //
                 }
                 
             }
@@ -199,6 +228,7 @@ public class test1 extends JFrame implements ActionListener {
     }
 
     private void endGame(int[] Bomb, JPanel back){
+        end = true;
         Tiles[Bomb[0]][Bomb[1]].getParent().setBackground(Color.red);
         back.getParent().setBackground(Color.orange);
         this.Gamelabel.setText("GAME OVER");
@@ -206,6 +236,7 @@ public class test1 extends JFrame implements ActionListener {
     }
 
     private void winGame(JPanel back){
+        end = true;
         back.getParent().setBackground(Color.green);
         this.Gamelabel.setText("YOU WON");
         this.HeaderPanel.revalidate();
@@ -225,9 +256,21 @@ public class test1 extends JFrame implements ActionListener {
 
     private JPanel createHeaderPanel() {
 		JPanel HeaderPanel = new JPanel();
-		HeaderPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		HeaderPanel.setLayout(new GridLayout(2, 0, 10, 0));
 		HeaderPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		HeaderPanel.setBackground(OUTER_BG_COLOR);
+
+        restart = new JButton("Restart");
+        restart.addActionListener(this);
+        //restart.setSize(new Dimension(50,1));
+
+        Gamelabel = new JLabel("MineSweeper");
+        flags = new JLabel("15");
+        flags.setForeground(Color.RED);
+       
+        HeaderPanel.add(Gamelabel,SwingConstants.CENTER);
+        HeaderPanel.add(restart);
+        HeaderPanel.add(flags);
 		return HeaderPanel;
 	}
 
@@ -261,7 +304,7 @@ public class test1 extends JFrame implements ActionListener {
         textpanel.setLayout(new GridLayout(3,1));
         labelpanel.setLayout(new GridLayout(2,1));
         
-        fertig = new JButton("Fertig");
+        fertig = new JButton("Select");
         label1 = new JLabel("Dimensionen:");
         KI = new JCheckBox("KI");
         String alter []={"5x5","10x10"};
@@ -276,6 +319,10 @@ public class test1 extends JFrame implements ActionListener {
 
         dialog.add(labelpanel,BorderLayout.WEST);
         dialog.add(textpanel,BorderLayout.CENTER);
+    }
+
+    public MineSweeper newGame(){
+        return new MineSweeper(this.W);
     }
 
     
