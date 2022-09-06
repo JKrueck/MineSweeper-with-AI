@@ -23,6 +23,10 @@ public class Tile {
         this.mined=false;
     }
 
+    public ArrayList <Tile> getAdjacentTiles(){
+        return this.adjacentTiles;
+    }
+
     public Clause getClause(){
         return this.possible;
     }
