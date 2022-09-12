@@ -50,10 +50,14 @@ public class AI {
 
         while(!gui.end){
             it = prepare.iterator();
+            Set<Set<Set<Tile>>> dnf = new HashSet<>();
             while(it.hasNext()){
                 Tile next = it.next();
-                powerSet(next, next.adjacent_mines);
+                dnf.add(kSubset(next, next.adjacent_mines));
+                
+
             }
+            //TO DO : Convert the set into booleans
         }
     }
 
@@ -75,10 +79,9 @@ public class AI {
         gui.updateGame(game);
     }
 
-    public Set<Set<Tile>> powerSet(Tile input,int size){
+    public Set<Set<Tile>> kSubset(Tile input,int size){
         Set<Set<Tile>> result = new HashSet<>();
 
-        //Hacky for now -- will think of something smart later
         if(size==1){
             Iterator<Tile> it = input.getAdjacentTiles().iterator();
             while(it.hasNext()){
@@ -91,14 +94,19 @@ public class AI {
             }
         }else {
             ArrayList<Tile> save = input.getAdjacentTiles();
-            int [] test ={10,15};
-            int test2 = test[0];
-
+            Iterator<Tile> it = save.iterator();
+            while(it.hasNext()){
+                Tile x = it.next();
+                if(x.mined){
+                    it.remove();
+                }
+            }
             int[] s = new int[size];
             Set<Tile> subset = new HashSet<>();
             if(size<=save.size()){
                 for(int i=0;(s[i]=i)<size-1;i++);
-                result.add(getSubset(save,s));
+                Set<Tile> tmp = getSubset(save,s); 
+                result.add(tmp);
                 for(;;) {
                     int i;
                     for (i = size - 1; i >= 0 && s[i] == save.size() - size + i; i--); 
@@ -109,7 +117,8 @@ public class AI {
                     for (++i; i < size; i++) {    // fill up remaining items
                         s[i] = s[i - 1] + 1; 
                     }
-                    result.add(getSubset(save, s));
+                    tmp = getSubset(save,s);
+                    result.add(tmp);
                 }
                 
             }
@@ -121,8 +130,11 @@ public class AI {
 
     private Set<Tile> getSubset(ArrayList<Tile> input, int[] subset) {
         Set<Tile> result = new HashSet<>(); 
-        for (int i = 0; i < subset.length; i++) 
-            result.add(input.get(i));
+        for (int i = 0; i < subset.length; i++){
+            result.add(input.get(subset[i]));
+            //System.out.print(subset[i]+" ");
+        }
+        //System.out.println("\n");
         return result;
     }
 }
