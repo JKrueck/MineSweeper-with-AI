@@ -146,7 +146,6 @@ public class Tile {
             coords[1]++;
         }
 
-        this.possible = new Clause(adjacentTiles,adjacent_mines);
     }
 
     public void mineAdjacent(Spielfeld feld,int dimension){

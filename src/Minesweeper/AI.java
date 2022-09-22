@@ -54,10 +54,25 @@ public class AI {
             while(it.hasNext()){
                 Tile next = it.next();
                 dnf.add(kSubset(next, next.adjacent_mines));
-                
 
             }
             //TO DO : Convert the set into booleans
+            Iterator<Set<Set<Tile>>> it2 = dnf.iterator();
+            ArrayList<ArrayList<Clause>> store = new ArrayList<>();
+            while(it2.hasNext()){
+                Set<Set<Tile>> x = it2.next();
+                Iterator<Set<Tile>> it3 = x.iterator();
+                ArrayList<Clause> DNF = new ArrayList<>();
+                while(it3.hasNext()){
+                    Set<Tile> y = it3.next();
+                    Clause test51 = new Clause(y, y.size());
+                    DNF.add(test51);
+                }
+                store.add(DNF);
+
+            }
+           int skip = 0;
+            
         }
     }
 
