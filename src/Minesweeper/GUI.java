@@ -237,6 +237,21 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    public void flagTile(int[] chosen){
+        if(game.feld.getTile(chosen).flagged){
+            Tiles[chosen[0]][chosen[1]].getParent().setBackground(EMPTY_TILE_COLOR);
+            game.feld.getTile(chosen).unFlagTile();
+            game.flags++;
+            flags.setText(String.valueOf(game.flags));
+        }else if(game.flags!=0){
+            Tiles[chosen[0]][chosen[1]].getParent().setBackground(Color.green);
+            game.feld.getTile(chosen).flagTile();
+            game.flags--;
+            flags.setText(String.valueOf(game.flags));
+        }
+        
+    }
+
     public void endGame(int[] Bomb, JPanel back){
         end = true;
         Tiles[Bomb[0]][Bomb[1]].getParent().setBackground(Color.red);
