@@ -43,17 +43,86 @@ public class AI {
 
         //get all mined tiles and then remove the tiles without adjacent mines
         this.prepare = game.feld.getMined();
+        ArrayList<Tile> unmined = game.feld.getHidden();
+        Set<Set<Set<Tile>>> protoClauses = new HashSet<>();
+        
         Iterator<Tile> it = prepare.iterator();
         while(it.hasNext()){
             Tile next = it.next();
             if(next.adjacent_mines==0){
                 it.remove();
+            }else{
+                protoClauses.add(kSubset(next, next.adjacent_mines));
             }
         }
         System.out.println(prepare.size());
+        
+        it = unmined.iterator();
+        HashMap<Tile,Literal> minLiteralList = new HashMap<>();
+        while(it.hasNext()){
+            Tile x = it.next();
+            minLiteralList.put(x,new Literal(x));
+        }
+
+        //Absolutely atrocious for now; pls pls fix later 
+        Iterator<Set<Set<Tile>>> outerIt = protoClauses.iterator();
+        ArrayList<Clause> DNF = new ArrayList<>();
+        while(outerIt.hasNext()){
+            Set<Set<Tile>> outer = outerIt.next();
+            Iterator<Set<Tile>> middleIt = outer.iterator();
+            while(middleIt.hasNext()){
+                Set<Tile> middle = middleIt.next();
+                Clause realClause = new Clause();
+                Iterator<Tile> innerIt = middle.iterator();
+                while(innerIt.hasNext()){
+                    Tile innerLiteral = innerIt.next();
+                    Literal toAdd = minLiteralList.get(innerLiteral);
+                    realClause.addLiteral(toAdd);
+                }
+                if(identifyDupes(DNF, realClause)){
+                    DNF.add(realClause);
+                }
+                
+            }
+        }
+
+        ArrayList<Clause> unaryC = new ArrayList<>();
+        for(int i=0;i<DNF.size();i++){
+            if(DNF.get(i).undecided==1){
+                unaryC.add(DNF.get(i));
+            }
+        }
+
+        HashMap<Literal,Boolean> decisionMemory = new HashMap<>();
+
+
+        for(int i=0;i<unaryC.size();i++){
+            unaryC.get(i).getLiteral().value = Literal.truth.TRUE;
+            ArrayList<Clause> toEvaluate = new ArrayList<>();
+            evalCheck(DNF,toEvaluate);
+            boolean conflict = evalClauses(toEvaluate);
+        }
+
+
+        int stopHere=0;
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         //main AI loop
-        while(!gui.end){
+        /*while(!gui.end){
             //iterator for the tiles with adjacent mines
             it = prepare.iterator();
             //HashSet for the "DNF"
@@ -81,21 +150,9 @@ public class AI {
                 }
                 store.add(DNF);
             }
-            ArrayList<Integer> sizeList = new ArrayList<>();
-            ArrayList<Clause> unary = new ArrayList<>();
-            for(int i=0;i<store.size();i++){
-                int size = store.get(i).size();
-                if(size==1){
-                    if(store.get(i).get(0).mines==1){
-                        unary.add(store.get(i).get(0));
-                    }
-                    sizeList.add(store.get(i).size());
-                }else{
-                    sizeList.add(store.get(i).size());
-                }
-            }
+            ArrayList<Clause> unary = findUnary(store);
             //if there are unary Clauses determine them as mines
-            if(unary.size()!=0){
+            while(unary.size()!=0){
                 for(int i=0;i<unary.size();i++){
                     Literal flag = unary.get(i).getLiteral();
                     if(flag.value == truth.IDK){
@@ -111,6 +168,7 @@ public class AI {
                         //System.out.println(flag.wild);
                     }  
                 }
+                unary = findUnary(store);
             }
            int skip = 0;
 
@@ -118,8 +176,49 @@ public class AI {
            Byte test2 = 1;
            System.out.println(Integer.toBinaryString(test1&test2));
             
+        }*/
+    }
+
+
+    private boolean evalClauses(ArrayList<Clause> list){
+
+        for(int i=0;i<list.size();i++){
+            Set<Literal> eval = list.get(i).getLiterals();
+            if(eval.size() == 1){
+                if(list.get(i).getLiteral().value == Literal.truth.TRUE){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void evalCheck(ArrayList<Clause> dnf, ArrayList<Clause> list){
+        for(int i=0;i<dnf.size();i++){
+            Clause check= dnf.get(i);
+            check.selfCheck();
+            if(check.undecided==0){
+                list.add(check);
+            }
         }
     }
+
+    private boolean identifyDupes(ArrayList<Clause> dnf, Clause check){
+        for(int i=0;i<dnf.size();i++){
+            Clause compare = dnf.get(i);
+            Set<Literal> compareDNF = compare.getLiterals();
+            Set<Literal> compareClause = check.getLiterals();
+            if(compareClause.equals(compareDNF)){
+                return false;
+            }
+        }
+        return true;
+
+    }
+
 
     private void newFlag(ArrayList<ArrayList<Clause>> dnf, truth inputValue, Tile flaggedTile){
         Iterator<ArrayList<Clause>> it = dnf.iterator();
@@ -129,18 +228,47 @@ public class AI {
             Iterator<Clause> fuckNames = x.iterator();
             while(fuckNames.hasNext()){
                 Clause y = fuckNames.next();
-                if(!y.setFlag(flaggedTile, inputValue)&&y.){
+                
+                Set<Literal> containsCheck = y.getLiterals();
+                Iterator<Literal> checkIterator = containsCheck.iterator();
+                boolean flag = false;
+                
+                while(checkIterator.hasNext()){
+                    Literal adjacencyCheck = checkIterator.next();
+                    if(adjacencyCheck.tile.getAdjacentTiles().contains(flaggedTile)){
+                        flag = true;
+                        break;
+                    }else{
+                        //return;
+                    }
+                }
+
+                boolean test = !y.setFlag(flaggedTile, inputValue);
+                if(test && flag){
                     fuckNames.remove();
                     System.out.println("removed");
                 }
             }
         }
+        int comehere=10;
     }
 
-    private boolean findUnary(ArrayList<Integer> sizes, ArrayList<ArrayList<Clause>> dnf ){
-        //sizes.find
+    private ArrayList<Clause> findUnary(ArrayList<ArrayList<Clause>> dnf ){  
+        ArrayList<Integer> sizeList = new ArrayList<>();
+        ArrayList<Clause> unary = new ArrayList<>();
+        for(int i=0;i<dnf.size();i++){
+            int size = dnf.get(i).size();
+            if(size==1){
+                if(dnf.get(i).get(0).undecided==1){
+                    unary.add(dnf.get(i).get(0));
+                }
+                sizeList.add(dnf.get(i).size());
+            }else{
+                sizeList.add(dnf.get(i).size());
+            }
+        }
 
-        return true;
+        return unary;
     }
 
     private void randMove(){

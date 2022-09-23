@@ -3,24 +3,47 @@ package Minesweeper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import Minesweeper.Literal.truth;
+
 import java.util.Iterator;
 
 public class Clause {
     
     private Set<Literal> c;
     private Set<Tile> saveThis;
-    int mines;
+    int undecided;
+    //Tile initiatedFrom;
 
-    public Clause(Set<Tile> input, int boom){
+    public Clause(){
+        
         this.c = new HashSet<>();
-        this.saveThis = input;
+        //c.add(input);
+        this.undecided = 0;
+        
+        
+        //this.saveThis = input;
 
-        Iterator<Tile> it = input.iterator();
+        
+
+
+    }
+
+    public void addLiteral(Literal add){
+        c.add(add);
+        undecided++;
+    }
+
+
+    public void selfCheck(){
+        this.undecided = 0;
+        Iterator<Literal> it = this.c.iterator();
         while(it.hasNext()){
-            c.add(new Literal(it.next()));
+            Literal x = it.next();
+            if(x.value==truth.IDK){
+                this.undecided++;
+            }
         }
-        this.mines=boom;
-
     }
 
     public Set<Literal> getLiterals(){
@@ -28,12 +51,23 @@ public class Clause {
     }
 
     public Literal getLiteral(){
-        if(this.c.size()==1){
+        if(this.undecided==1){
             Iterator<Literal> it = this.c.iterator();
-            return it.next();
+            while(it.hasNext()){
+                Literal x = it.next();
+                if(x.value==truth.IDK){
+                    return x;
+                }
+            }
+            try {
+                throw new Exception("no undecided literal left");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }else{
             try {
-                throw new Exception("more than one Literal in this clause");
+                throw new Exception("more than one undecided Literal in this clause");
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -48,6 +82,7 @@ public class Clause {
                 Literal x = it.next();
                 if(x.tile.equals(inputTile)){
                     x.value = inputValue;
+                    update();
                     //System.out.println("Set flag on "+ x.tile.coordinates.toString());
                 }
             }
@@ -61,6 +96,18 @@ public class Clause {
 
     public int getSize(){
         return this.c.size();
+    }
+
+    private void update(){
+        Iterator<Literal> it = this.c.iterator();
+        int count=0;
+        while(it.hasNext()){
+            Literal x = it.next();
+            if(x.value==truth.IDK){
+                count++;
+            }
+        }
+        this.undecided = count;
     }
 }
 

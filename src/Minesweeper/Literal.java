@@ -9,11 +9,21 @@ public class Literal {
 
     Tile tile;
     truth value;
-    byte wild;
+    byte comparison;
 
     public Literal(Tile input){
         this.tile = input;
         this.value = truth.IDK;
-        this.wild = Byte.MAX_VALUE;
+        this.comparison= Byte.MAX_VALUE;
+    }
+
+    public void setFlag(truth input){
+        if(input==truth.TRUE){
+            this.value = truth.TRUE;
+            this.comparison = 1; 
+        }else{
+            this.value = truth.FALSE;
+            this.comparison = 0;
+        }
     }
 }

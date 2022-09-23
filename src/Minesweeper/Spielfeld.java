@@ -41,12 +41,27 @@ public class Spielfeld {
         return  feld[coords[0]][coords[1]];
     }
 
+    //Returns all Tiles that have already been mined
     public ArrayList<Tile> getMined(){
         ArrayList<Tile> result = new ArrayList<>();
         for (int i=0;i<this.dimension+1;i++){
             for(int j=0;j<this.dimension+1;j++){
                 int[]coords={i,j};
                 if(getTile(coords).mined){
+                    result.add(getTile(coords));
+                }         
+            }
+        }
+        return result;
+    }
+
+    //Returns all umined tiles
+    public ArrayList<Tile> getHidden(){
+        ArrayList<Tile> result = new ArrayList<>();
+        for (int i=0;i<this.dimension+1;i++){
+            for(int j=0;j<this.dimension+1;j++){
+                int[]coords={i,j};
+                if(!getTile(coords).mined){
                     result.add(getTile(coords));
                 }         
             }
