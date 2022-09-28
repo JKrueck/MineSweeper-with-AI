@@ -7,22 +7,22 @@ public class Literal {
         IDK
     }
 
-    Tile tile;
-    truth value;
+    Tile represents;
+    truth decision;
     byte comparison;
 
     public Literal(Tile input){
-        this.tile = input;
-        this.value = truth.IDK;
+        this.represents = input;
+        this.decision = truth.IDK;
         this.comparison= Byte.MAX_VALUE;
     }
 
     public void setFlag(truth input){
         if(input==truth.TRUE){
-            this.value = truth.TRUE;
+            this.decision = truth.TRUE;
             this.comparison = 1; 
         }else{
-            this.value = truth.FALSE;
+            this.decision = truth.FALSE;
             this.comparison = 0;
         }
     }

@@ -16,12 +16,14 @@ public class AI {
     GUI gui;
     MineSweeper game;
     HashMap<Integer[],Boolean> isBomb;
+    HashMap<Tile,Literal> literals;
     ArrayList<Clause> dnf;
     ArrayList<Tile> prepare;
 
     public AI(GUI gui, MineSweeper game){
         this.gui = gui;
         this.game = game;
+        this.literals = new HashMap<>();
 
         /*this.dnf = game.getClauses();
         Iterator<Clause> it = dnf.iterator();
@@ -38,6 +40,15 @@ public class AI {
     
 
     public void run(){
+        //Generate literals for every Tile in the game
+        for(int x=0;x<game.dim;x++){
+            for(int y=0;y<game.dim;y++){
+                int[] coords = {x,y};
+                Tile get = game.feld.getTile(coords);
+                this.literals.put(get,new Literal(get));
+            }
+        }
+
         //When starting the game always do a random move first
         randMove();
 
@@ -45,19 +56,25 @@ public class AI {
         this.prepare = game.feld.getMined();
         ArrayList<Tile> unmined = game.feld.getHidden();
         Set<Set<Set<Tile>>> protoClauses = new HashSet<>();
+        ArrayList<Formula> DNF = new ArrayList<>();
         
         Iterator<Tile> it = prepare.iterator();
         while(it.hasNext()){
             Tile next = it.next();
+            //As these have all been succesfully mined we can conclude trivially that they are not bombs
+            Literal notABomb = literals.get(next);
+            notABomb.setFlag(truth.FALSE);
+            //remove the tiles without adjacent tiles from our consideration
             if(next.adjacent_mines==0){
                 it.remove();
             }else{
-                protoClauses.add(kSubset(next, next.adjacent_mines));
+                DNF.add(new Formula(next, kSubset(next, next.adjacent_mines), literals));
+                //protoClauses.add(kSubset(next, next.adjacent_mines));
             }
         }
         System.out.println(prepare.size());
         
-        it = unmined.iterator();
+        /*it = unmined.iterator();
         HashMap<Tile,Literal> minLiteralList = new HashMap<>();
         while(it.hasNext()){
             Tile x = it.next();
@@ -96,13 +113,17 @@ public class AI {
         HashMap<Literal,Boolean> decisionMemory = new HashMap<>();
 
 
+
+        //I HAVE A DNF NOT A CNF -> PROBABLY NEED A CLASS FOR DNF FOR ÜBERSICHT 
+        // use better inference
+
         for(int i=0;i<unaryC.size();i++){
-            unaryC.get(i).getLiteral().value = Literal.truth.TRUE;
+            unaryC.get(i).getLiteral().decision = Literal.truth.TRUE;
             ArrayList<Clause> toEvaluate = new ArrayList<>();
             evalCheck(DNF,toEvaluate);
             boolean conflict = evalClauses(toEvaluate);
         }
-
+*/
 
         int stopHere=0;
 
@@ -185,7 +206,7 @@ public class AI {
         for(int i=0;i<list.size();i++){
             Set<Literal> eval = list.get(i).getLiterals();
             if(eval.size() == 1){
-                if(list.get(i).getLiteral().value == Literal.truth.TRUE){
+                if(list.get(i).getLiteral().decision == Literal.truth.TRUE){
                     return false;
                 }else{
                     return true;
@@ -235,7 +256,7 @@ public class AI {
                 
                 while(checkIterator.hasNext()){
                     Literal adjacencyCheck = checkIterator.next();
-                    if(adjacencyCheck.tile.getAdjacentTiles().contains(flaggedTile)){
+                    if(adjacencyCheck.represents.getAdjacentTiles().contains(flaggedTile)){
                         flag = true;
                         break;
                     }else{

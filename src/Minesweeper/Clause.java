@@ -40,7 +40,7 @@ public class Clause {
         Iterator<Literal> it = this.c.iterator();
         while(it.hasNext()){
             Literal x = it.next();
-            if(x.value==truth.IDK){
+            if(x.decision==truth.IDK){
                 this.undecided++;
             }
         }
@@ -55,7 +55,7 @@ public class Clause {
             Iterator<Literal> it = this.c.iterator();
             while(it.hasNext()){
                 Literal x = it.next();
-                if(x.value==truth.IDK){
+                if(x.decision==truth.IDK){
                     return x;
                 }
             }
@@ -80,8 +80,8 @@ public class Clause {
             Iterator<Literal> it = this.c.iterator();
             while(it.hasNext()){
                 Literal x = it.next();
-                if(x.tile.equals(inputTile)){
-                    x.value = inputValue;
+                if(x.represents.equals(inputTile)){
+                    x.decision = inputValue;
                     update();
                     //System.out.println("Set flag on "+ x.tile.coordinates.toString());
                 }
@@ -103,7 +103,7 @@ public class Clause {
         int count=0;
         while(it.hasNext()){
             Literal x = it.next();
-            if(x.value==truth.IDK){
+            if(x.decision==truth.IDK){
                 count++;
             }
         }
