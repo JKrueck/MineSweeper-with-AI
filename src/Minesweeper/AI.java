@@ -1,5 +1,6 @@
 package Minesweeper;
 
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,7 +73,20 @@ public class AI {
                 //protoClauses.add(kSubset(next, next.adjacent_mines));
             }
         }
-        System.out.println(prepare.size());
+        while(true){
+            //List to store all literals which need to be bombs
+            Set<Literal> markThis = new HashSet<>();
+            ArrayList<Formula> unary = findUnary(DNF,markThis);
+            if(unary.size()!=0){
+            newFlag(DNF, markThis);
+            
+            int stuff = 1335;
+            }else{
+                int stuff = 1336;
+            }
+
+            System.out.println(prepare.size());
+        }
         
         /*it = unmined.iterator();
         HashMap<Tile,Literal> minLiteralList = new HashMap<>();
@@ -125,7 +139,7 @@ public class AI {
         }
 */
 
-        int stopHere=0;
+        //int stopHere=0;
 
         
 
@@ -241,8 +255,48 @@ public class AI {
     }
 
 
-    private void newFlag(ArrayList<ArrayList<Clause>> dnf, truth inputValue, Tile flaggedTile){
-        Iterator<ArrayList<Clause>> it = dnf.iterator();
+    private void newFlag(ArrayList<Formula> DNF, Set<Literal> markThis){
+        
+        
+        Iterator<Literal> litIt = markThis.iterator();
+        while(litIt.hasNext()){
+            //change the literal values
+            Literal bomb = litIt.next();
+            bomb.decision = truth.TRUE;
+            bomb.comparison = 1;
+            //flag the tile in the gui
+            this.gui.flagTile(bomb.represents.coordinates);
+            //update the literals for every formula
+            DNF.forEach((dnf)->dnf.update());
+
+            //remove true and false formulas by logic
+            Iterator<Formula> formIt = DNF.iterator();
+            while(formIt.hasNext()){
+                Formula x = formIt.next();
+                if(x.size == 0){
+                    formIt.remove();
+                }
+                //So future me here is my best explanation: if the tile a dnf formula is instantiated from, 
+                //contains the tile we have determined as a bomb, we then go trough all clauses and delete those
+                //that don't contain the right literal. We do this by checking if the "undecided" variable has decreased
+                //i hope this actually works-> seems to; still horrible because three fucking loops 
+                if(x.instatiatedFrom.getAdjacentTiles().contains(bomb.represents)){
+                    Iterator<Clause> claIt = x.clauses.iterator();
+                    while(claIt.hasNext()){
+                        Clause checkMYASS = claIt.next();
+                        if(checkMYASS.undecided > x.minUndecided){
+                            claIt.remove();
+                            x.update();
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
+        /*Iterator<ArrayList<Clause>> it = dnf.iterator();
         while(it.hasNext()){
             ArrayList<Clause> x = it.next();
             //NEED TO FIND OUT TO WHICH TILE THIS BELONGS SO I CAN ONLY REMOVE IT IFF flaggedTile IS ADJACENT TO IT
@@ -270,26 +324,26 @@ public class AI {
                     System.out.println("removed");
                 }
             }
-        }
+        }*/
         int comehere=10;
     }
 
-    private ArrayList<Clause> findUnary(ArrayList<ArrayList<Clause>> dnf ){  
-        ArrayList<Integer> sizeList = new ArrayList<>();
-        ArrayList<Clause> unary = new ArrayList<>();
+    private ArrayList<Formula> findUnary(ArrayList<Formula> dnf, Set<Literal> save ){  
+        ArrayList<Formula> result = new ArrayList<>();
+
         for(int i=0;i<dnf.size();i++){
-            int size = dnf.get(i).size();
-            if(size==1){
-                if(dnf.get(i).get(0).undecided==1){
-                    unary.add(dnf.get(i).get(0));
+            Formula toCheck = dnf.get(i);
+            if(toCheck.size==1){
+                //make a function for this in formula class
+                Clause checkClause = toCheck.clauses.get(0);
+                if(checkClause.undecided==1){
+                    result.add(toCheck);
+                    save.add(checkClause.getLiteral());
                 }
-                sizeList.add(dnf.get(i).size());
-            }else{
-                sizeList.add(dnf.get(i).size());
             }
         }
 
-        return unary;
+        return result;
     }
 
     private void randMove(){

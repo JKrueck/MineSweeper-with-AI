@@ -13,13 +13,14 @@ public class Clause {
     private Set<Literal> c;
     private Set<Tile> saveThis;
     int undecided;
-    //Tile initiatedFrom;
+    int decided;
 
     public Clause(){
         
         this.c = new HashSet<>();
         //c.add(input);
         this.undecided = 0;
+        this.decided = 0;
         
         
         //this.saveThis = input;
@@ -98,16 +99,20 @@ public class Clause {
         return this.c.size();
     }
 
-    private void update(){
+    public void update(){
         Iterator<Literal> it = this.c.iterator();
-        int count=0;
+        int count1 = 0;
+        int count2 = 0;
         while(it.hasNext()){
             Literal x = it.next();
             if(x.decision==truth.IDK){
-                count++;
+                count1++;
+            }else{
+                count2++;
             }
         }
-        this.undecided = count;
+        this.undecided = count1;
+        this.decided = count2;
     }
 }
 
